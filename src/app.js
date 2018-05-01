@@ -1,19 +1,30 @@
-const WebDB = require('@beaker/webdb')
+import React, { Component } from 'react'
+import ReactDOM from 'react-dom'
+import createWebDbContainer from './WebDbContainer'
 
-async function initDb () {
-  let url = localStorage.getItem('my-dat')
-  if (!url) {
-    const archive = await DatArchive.create({
-      title:'make-dat-lunch'
-    })
-    url = archive.url
-    localStorage.setItem('my-dat', url)
+class App extends Component {
+  constructor (props) {
+    super(props)
+    this.onCreateGroupClick = this.onCreateGroupClick.bind(this)
   }
-  const webdb = new WebDB('make-dat-lunch')
-  await webdb.indexArchive(url)
-  return webdb
+
+  onCreateGroupClick () {
+    this.props.createGroup()
+  }
+
+  render () {
+    return (
+      <div>
+        {this.props.webdb ? (
+          <p>Welcome to dat lunch!</p>
+        ) : (
+          <button onClick={this.onCreateGroupClick}>Create Group</button>
+        )}
+      </div>
+    )
+  }
 }
 
-initDb().then(webdb => {
-  window.webdb = webdb
-})
+const WebDbApp = createWebDbContainer(App)
+
+ReactDOM.render(<WebDbApp />, document.getElementById('root'))
