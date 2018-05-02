@@ -16,3 +16,34 @@ membership dance
 - GO GO GO.
 
 This all assumes that everyones dats are being replicated by a makelunch-hashbase-alike service, so you can rely on dats being sync'd even when peers are unavailable.
+
+
+## Dat
+
+`/admins/*.json`
+
+```js
+{ dat: 'Hash1' }
+```
+
+`/eaters/*.json`
+
+```js
+{
+  id: `${now}`
+  name: String,
+  img: url
+}
+```
+
+`/meals/*.json`
+
+```js
+{
+  date: isoDate
+  chef: [userId]
+  eaters: [userId]
+  guests: Integer
+  dish: String
+}
+```

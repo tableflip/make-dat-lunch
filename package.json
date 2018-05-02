@@ -17,6 +17,8 @@
     "@beaker/webdb": "^4.1.1",
     "react": "^16.3.2",
     "react-dom": "^16.3.2",
+    "react-router": "^4.2.0",
+    "react-router-dom": "^4.2.2",
     "tachyons": "^4.9.1"
   },
   "browserslist": [
