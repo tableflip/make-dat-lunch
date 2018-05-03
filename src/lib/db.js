@@ -7,12 +7,22 @@ export function hasGroup () {
 
 export async function initDb () {
   let url = window.localStorage.getItem('my-dat')
+
   if (!url) {
     const archive = await DatArchive.create({ title: 'make-dat-lunch' })
+    await archive.mkdir('/eaters')
     url = archive.url
     window.localStorage.setItem('my-dat', url)
   }
+
   const webdb = new WebDB('make-dat-lunch')
+
+  webdb.define('eaters', {
+    filePattern: [
+      '/eaters/*.json'
+    ]
+  })
+
   await webdb.indexArchive(url)
-  return webdb
+  return { webdb, myDat: url }
 }
