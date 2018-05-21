@@ -17,11 +17,11 @@ class HomePage extends React.Component {
             <a href='/add-eater'>ADD EATER!!!</a>
           </div>
         ) : (
-          <button onClick={this.props.doCreateGroup}>Create Group</button>
+          <button onClick={this.createGroup}>Create Group</button>
         )}
       </div>
     )
   }
 }
 
-export default connect('selectDatReady', 'doCreateGroup', HomePage)
+export default connect('selectDatReady', 'doInitDat', HomePage)
