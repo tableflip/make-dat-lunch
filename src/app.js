@@ -1,43 +1,25 @@
 import React, { Component } from 'react'
-import { BrowserRouter as Router, Route } from 'react-router-dom'
-import ReactDOM from 'react-dom'
-import { createStore } from 'redux'
-import { Provider } from 'react-redux'
-import createWebDbContainer from './WebDbContainer'
-import HomePage from './pages/HomePage'
-import AddEaterPage from './pages/AddEaterPage'
-import rootReducer from './reducers'
+import PropTypes from 'prop-types'
+import { connect } from 'redux-bundler-react'
+import navHelper from 'internal-nav-helper'
 
-const store = createStore(rootReducer)
-
-class App extends Component {
-  constructor (props) {
-    super(props)
-    this.onCreateGroupClick = this.onCreateGroupClick.bind(this)
-  }
-
-  onCreateGroupClick () {
-    this.props.createGroup()
+export class App extends Component {
+  static propTypes = {
+    doUpdateUrl: PropTypes.func.isRequired,
+    route: PropTypes.oneOfType([
+      PropTypes.func,
+      PropTypes.element
+    ]).isRequired
   }
 
   render () {
+    const Page = this.props.route
     return (
-      <Provider store={store}>
-        <Router>
-          <div>
-            <Route exact path='/' render={() => (
-              <HomePage webdb={this.props.webdb} onCreateGroupClick={this.onCreateGroupClick} />
-            )} />
-            <Route path='/add-eater' render={() => (
-              <AddEaterPage webdb={this.props.webdb} />
-            )} />
-          </div>
-        </Router>
-      </Provider>
+      <div onClick={navHelper(this.props.doUpdateUrl)}>
+        <Page />
+      </div>
     )
   }
 }
 
-const WebDbApp = createWebDbContainer(App)
-
-ReactDOM.render(<WebDbApp />, document.getElementById('root'))
+export default connect('selectRoute', 'doUpdateUrl', App)

@@ -10,21 +10,26 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "babel-eslint": "^8.2.3",
     "parcel-bundler": "^1.7.1",
     "standard": "^11.0.1"
   },
   "dependencies": {
     "@beaker/webdb": "^4.1.1",
+    "internal-nav-helper": "^1.0.2",
+    "prop-types": "^15.6.1",
     "react": "^16.3.2",
     "react-dom": "^16.3.2",
     "react-redux": "^5.0.7",
-    "react-router": "^4.2.0",
-    "react-router-dom": "^4.2.2",
     "redux": "^4.0.0",
+    "redux-bundler": "^21.2.0",
     "tachyons": "^4.9.1",
     "window-or-global": "^1.0.1"
   },
   "browserslist": [
     ">5%"
-  ]
+  ],
+  "standard": {
+    "parser": "babel-eslint"
+  }
 }

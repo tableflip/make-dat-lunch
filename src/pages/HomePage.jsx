@@ -1,26 +1,27 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
-import { connect } from 'react-redux'
-import { createGroup } from '../actions'
+import { connect } from 'redux-bundler-react'
+import PropTypes from 'prop-types'
 
 class HomePage extends React.Component {
+  static propTypes = {
+    datReady: PropTypes.bool.isRequired,
+    doCreateGroup: PropTypes.func.isRequired
+  }
+
   render () {
     return (
       <div>
-        {this.props.myDat ? (
+        {this.props.datReady ? (
           <div>
             <h1>Welcome to DAT LUNCH!?</h1>
-            <Link to='/add-eater'>ADD EATER!!!</Link>
+            <a href='/add-eater'>ADD EATER!!!</a>
           </div>
         ) : (
-          <button onClick={this.props.createGroup}>Create Group</button>
+          <button onClick={this.props.doCreateGroup}>Create Group</button>
         )}
       </div>
     )
   }
 }
 
-const select = ({ myDat }) => ({ myDat })
-const actions = { createGroup }
-
-export default connect(select, actions)(HomePage)
+export default connect('selectDatReady', 'doCreateGroup', HomePage)
