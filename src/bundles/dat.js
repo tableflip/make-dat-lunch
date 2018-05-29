@@ -1,13 +1,32 @@
 /* global DatArchive */
 import WebDB from '@beaker/webdb'
 import root from 'window-or-global'
+import {createSelector} from 'redux-bundler'
+
+async function createWebDb ({url}) {
+  const webdb = new WebDB('make-dat-lunch')
+
+  webdb.define('eaters', {
+    filePattern: [
+      '/eaters/*.json'
+    ]
+  })
+
+  return webdb.indexArchive(url)
+}
 
 export default {
   name: 'dat',
 
   reducer (state = {}, action) {
-    if (action.type === 'DAT_INIT_FINISHED') {
-      return { ...state, datReady: true }
+    if (action.type === 'DAT_CREATE_STARTED') {
+      return { ...state, datState: 'creating' }
+    }
+    if (action.type === 'DAT_INIT_STARTED') {
+      return { ...state, datState: 'initialising' }
+    }
+    if (action.type === 'DAT_INIT_FINISHED' || action.type === 'DAT_CREATE_FINISHED') {
+      return { ...state, datState: 'ready' }
     }
     return state
   },
@@ -16,38 +35,42 @@ export default {
     return { getDat: root.dat, getWebdb: root.webdb }
   },
 
-  selectDatReady: state => state.dat.datReady,
+  selectDatReady: state => state.dat.datState === 'ready',
 
-  doInitDat: () => async ({ dispatch }) => {
+  selectMyDatUrl: state => state.dat.myDatUrl
+
+  selectDatState: state => state.dat.datState
+
+  doInitDat: () => async ({ dispatch, getState }) => {
     dispatch({ type: 'DAT_INIT_STARTED' })
 
-    let url = window.localStorage.getItem('my-dat')
-    let dat
-
-    if (url) {
-      dat = new DatArchive(url)
-    } else {
-      dat = await DatArchive.create({ title: 'make-dat-lunch' })
-      await dat.mkdir('/eaters')
-      window.localStorage.setItem('my-dat', dat.url)
-    }
-
-    const webdb = new WebDB('make-dat-lunch')
-
-    webdb.define('eaters', {
-      filePattern: [
-        '/eaters/*.json'
-      ]
-    })
-
-    await webdb.indexArchive(dat.url)
-
-    root.webdb = webdb
+    let url = getState().dat.myDatUrl
+    let dat = new DatArchive(url)
+    root.webdb = await createWebDb(dat)
     root.dat = dat
 
     dispatch({ type: 'DAT_INIT_FINISHED' })
   }
 
-  // TODO: react to undefined datReady and datUrl to auto initialise an existing
-  // dat archive
+  doCreateDat: () => async ({ dispatch }) => {
+    dispatch({ type: 'DAT_CREATE_STARTED' })
+
+    const dat = await DatArchive.create({ title: 'make-dat-lunch' })
+    await dat.mkdir('/eaters')
+    window.localStorage.setItem('my-dat', dat.url)
+    root.webdb = await createWebDb(dat)
+    root.dat = dat
+
+    dispatch({ type: 'DAT_CREATE_FINISHED' })
+  }
+
+  reactUrlButDatNotReady: createSelector(
+    'selectMyDatUrl',
+    'selectDatState',
+    (datUrl, datState) => {
+      if (datUrl && !datState) {
+        return { actionCreator: 'doInitDat' }
+      }
+    }
+  )
 }

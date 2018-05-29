@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 
 class HomePage extends React.Component {
   static propTypes = {
-    datReady: PropTypes.bool.isRequired,
+    selectHasGroup: PropTypes.bool.isRequired,
     doCreateGroup: PropTypes.func.isRequired
   }
 
@@ -24,4 +24,4 @@ class HomePage extends React.Component {
   }
 }
 
-export default connect('selectDatReady', 'doInitDat', HomePage)
+export default connect('selectHasGroup', 'doCreateGroup', HomePage)
