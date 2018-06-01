@@ -25,8 +25,14 @@ export default {
     if (action.type === 'DAT_INIT_STARTED') {
       return { ...state, datState: 'initialising' }
     }
-    if (action.type === 'DAT_INIT_FINISHED' || action.type === 'DAT_CREATE_FINISHED') {
+    if (action.type === 'DAT_INIT_FINISHED') {
       return { ...state, datState: 'ready' }
+    }
+    if (action.type === 'DAT_CREATE_FINISHED') {
+      return { ...state, datState: 'ready', myDatUrl: action.payload }
+    }
+    if (action.type === 'DAT_INIT_ERRORED') {
+      return { ...state, datState: null, myDatUrl: null }
     }
     return state
   },
@@ -37,20 +43,28 @@ export default {
 
   selectDatReady: state => state.dat.datState === 'ready',
 
-  selectMyDatUrl: state => state.dat.myDatUrl
+  selectMyDatUrl: state => state.dat.myDatUrl,
 
-  selectDatState: state => state.dat.datState
+  selectDatState: state => state.dat.datState,
 
   doInitDat: () => async ({ dispatch, getState }) => {
     dispatch({ type: 'DAT_INIT_STARTED' })
-
     let url = getState().dat.myDatUrl
-    let dat = new DatArchive(url)
+    console.log('here den', url)
+    let dat
+    try {
+      // Check the dat exists
+      dat = new DatArchive(url)
+      await dat.getInfo({timeout: 100})
+    } catch (err) {
+      return dispatch({ type: 'DAT_INIT_ERRORED' })
+    }
+
     root.webdb = await createWebDb(dat)
     root.dat = dat
 
     dispatch({ type: 'DAT_INIT_FINISHED' })
-  }
+  },
 
   doCreateDat: () => async ({ dispatch }) => {
     dispatch({ type: 'DAT_CREATE_STARTED' })
@@ -61,8 +75,8 @@ export default {
     root.webdb = await createWebDb(dat)
     root.dat = dat
 
-    dispatch({ type: 'DAT_CREATE_FINISHED' })
-  }
+    dispatch({ type: 'DAT_CREATE_FINISHED', payload: dat.url })
+  },
 
   reactUrlButDatNotReady: createSelector(
     'selectMyDatUrl',

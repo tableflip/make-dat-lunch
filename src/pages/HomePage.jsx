@@ -4,20 +4,20 @@ import PropTypes from 'prop-types'
 
 class HomePage extends React.Component {
   static propTypes = {
-    selectHasGroup: PropTypes.bool.isRequired,
+    hasGroup: PropTypes.bool.isRequired,
     doCreateGroup: PropTypes.func.isRequired
   }
 
   render () {
     return (
       <div>
-        {this.props.datReady ? (
+        {this.props.hasGroup ? (
           <div>
             <h1>Welcome to DAT LUNCH!?</h1>
             <a href='/add-eater'>ADD EATER!!!</a>
           </div>
         ) : (
-          <button onClick={this.createGroup}>Create Group</button>
+          <button onClick={this.props.doCreateGroup}>Create Group</button>
         )}
       </div>
     )

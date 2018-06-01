@@ -7,6 +7,6 @@ import getStore from './bundles'
 let myDatUrl = window.localStorage.getItem('my-dat')
 
 ReactDOM.render(
-  <Provider store={getStore({dat: {myDatUrl})}>
+  <Provider store={getStore({dat: {myDatUrl}})}>
     <App />
   </Provider>, document.getElementById('root'))
