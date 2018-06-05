@@ -3,7 +3,15 @@ import WebDB from '@beaker/webdb'
 import root from 'window-or-global'
 import {createSelector} from 'redux-bundler'
 
-async function createWebDb ({url}) {
+async function createWebDb (dat) {
+  try {
+    await dat.mkdir('/eaters')
+  } catch (err) {
+    if (err.message.includes('EntryAlreadyExistsError')) {
+      throw err
+    }
+  }
+
   const webdb = new WebDB('make-dat-lunch')
 
   webdb.define('eaters', {
@@ -12,7 +20,9 @@ async function createWebDb ({url}) {
     ]
   })
 
-  return webdb.indexArchive(url)
+  await webdb.open()
+  await webdb.indexArchive(dat.url)
+  return webdb
 }
 
 export default {
@@ -38,7 +48,7 @@ export default {
   },
 
   getExtraArgs () {
-    return { getDat: root.dat, getWebdb: root.webdb }
+    return { getDat: () => root.dat, getWebdb: () => root.webdb }
   },
 
   selectDatReady: state => state.dat.datState === 'ready',
@@ -70,7 +80,6 @@ export default {
     dispatch({ type: 'DAT_CREATE_STARTED' })
 
     const dat = await DatArchive.create({ title: 'make-dat-lunch' })
-    await dat.mkdir('/eaters')
     window.localStorage.setItem('my-dat', dat.url)
     root.webdb = await createWebDb(dat)
     root.dat = dat

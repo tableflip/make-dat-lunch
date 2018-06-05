@@ -1,6 +1,7 @@
 import React from 'react'
+import { connect } from 'redux-bundler-react'
 
-export default class AddEaterPage extends React.Component {
+class AddEaterPage extends React.Component {
   constructor (props) {
     super(props)
     this.state = { name: '' }
@@ -12,9 +13,10 @@ export default class AddEaterPage extends React.Component {
     this.setState({ name: e.target.value })
   }
 
-  onSubmit (e) {
+  async onSubmit (e) {
     e.preventDefault()
-    this.props.createEater({ name: this.state.name })
+    const id = await this.props.doCreateEater({ name: this.state.name })
+    this.props.doUpdateUrl(`/eaters/${id}`)
   }
 
   render () {
@@ -23,10 +25,12 @@ export default class AddEaterPage extends React.Component {
         <h1>Add eater</h1>
         <form onSubmit={this.onSubmit}>
           <label>Name</label>
-          <input type='text' value={this.state.name} />
+          <input type='text' value={this.state.name} onChange={this.onNameChange} />
           <button type='submit'>Add</button>
         </form>
       </div>
     )
   }
 }
+
+export default connect('doUpdateUrl', 'doCreateEater', AddEaterPage)
