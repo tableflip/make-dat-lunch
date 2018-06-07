@@ -18,12 +18,12 @@ export default {
   selectHasGroup: state => !!state.dat.myDatUrl,
 
   selectEatersRaw: state => state.groups.eaters,
-  selectEatersData: state => state.groups.eaters.data,
+  selectEaters: state => state.groups.eaters.data,
 
   selectActiveEater: createSelector(
     'selectRouteParams',
     'selectPathname',
-    'selectEatersData',
+    'selectEaters',
     (routeParams, pathname, eaters) => {
       if (!pathname.includes('/eaters') || !routeParams.eaterId || !eaters) {
         return null
